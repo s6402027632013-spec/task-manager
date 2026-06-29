@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แผนการปฏิบัติงาน - ฝ่ายวิจัยและพัฒนา</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f8f7f4;
+  --surface: #ffffff;
+  --border: #e5e2db;
+  --border-strong: #ccc9c0;
+  --text: #1a1a18;
+  --text-muted: #6b6860;
+  --text-hint: #9e9b93;
+  --accent: #2d6a9f;
+  --accent-light: #e6f0f8;
+  --accent-dark: #1a4a72;
+  --green: #2d7a4f;
+  --green-light: #e6f4ec;
+  --amber: #a05c10;
+  --amber-light: #fdf0e0;
+  --red: #b93333;
+  --red-light: #fce8e8;
+  --purple: #6b3fa0;
+  --purple-light: #f0eafa;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --font: 'Sarabun','Noto Sans Thai',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+
+/* LOGIN SCREEN */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg)}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:40px 36px;width:360px;box-shadow:0 4px 24px rgba(0,0,0,0.08)}
+.login-logo{font-size:32px;text-align:center;margin-bottom:8px}
+.login-title{font-size:20px;font-weight:600;text-align:center;margin-bottom:4px}
+.login-sub{font-size:13px;color:var(--text-muted);text-align:center;margin-bottom:28px}
+.login-who{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px}
+.who-btn{padding:10px 6px;border:1px solid var(--border-strong);border-radius:var(--radius);background:var(--surface);cursor:pointer;font-family:var(--font);font-size:12px;color:var(--text-muted);text-align:center;transition:all .15s}
+.who-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+.who-btn.selected{border-color:var(--accent);background:var(--accent-light);color:var(--accent);font-weight:500}
+.who-btn .who-icon{font-size:20px;display:block;margin-bottom:4px}
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:5px}
+.form-input,.form-select{width:100%;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius);font-family:var(--font);font-size:14px;color:var(--text);background:var(--surface);transition:border-color .15s}
+.form-input:focus,.form-select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(45,106,159,.12)}
+.login-error{color:var(--red);font-size:12px;min-height:18px;margin-bottom:8px;text-align:center}
+
+/* APP */
+#app-screen{display:none}
+.app-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:12px;height:56px;position:sticky;top:0;z-index:100}
+.app-title{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
+.app-title span{color:var(--accent)}
+.header-right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.role-badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500}
+.role-manager{background:var(--purple-light);color:var(--purple)}
+.role-lead{background:var(--accent-light);color:var(--accent)}
+.role-member{background:var(--green-light);color:var(--green)}
+
+/* TABS */
+.tab-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex}
+.tab-btn{padding:10px 18px;border:none;background:none;cursor:pointer;font-family:var(--font);font-size:14px;color:var(--text-muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;display:flex;align-items:center;gap:6px}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:500}
+.tab-btn:hover:not(.active){color:var(--text);background:var(--bg)}
+.tab-btn.hidden-tab{display:none}
+
+/* MAIN */
+.main{padding:24px;max-width:1400px;margin:0 auto}
+.view{display:none}
+.view.active{display:block}
+
+/* BUTTONS */
+.btn{padding:7px 14px;border-radius:var(--radius);border:1px solid var(--border-strong);background:var(--surface);color:var(--text);font-family:var(--font);font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap}
+.btn:hover{background:var(--bg);border-color:var(--accent);color:var(--accent)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:white;font-weight:500}
+.btn-primary:hover{background:var(--accent-dark);border-color:var(--accent-dark);color:white}
+.btn-sm{padding:4px 10px;font-size:12px}
+.btn-danger:hover{border-color:var(--red);color:var(--red)}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+
+/* SUMMARY */
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+.stat-label{font-size:12px;color:var(--text-muted);margin-bottom:4px}
+.stat-value{font-size:24px;font-weight:600}
+.stat-card.c-blue .stat-value{color:var(--accent)}
+.stat-card.c-green .stat-value{color:var(--green)}
+.stat-card.c-amber .stat-value{color:var(--amber)}
+.stat-card.c-muted .stat-value{color:var(--text-muted)}
+
+/* PROJECT */
+.project-section{margin-bottom:20px}
+.project-header{display:flex;align-items:center;gap:10px;padding:11px 16px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:2px;cursor:pointer;user-select:none}
+.project-header:hover{background:var(--accent-light);border-color:var(--accent)}
+.project-name{font-weight:600;font-size:14px;flex:1}
+.project-progress-bar{width:100px;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.project-progress-fill{height:100%;border-radius:3px;transition:width .3s}
+.proj-pct{font-size:12px;color:var(--text-muted);min-width:30px;text-align:right}
+.collapse-icon{color:var(--text-muted);transition:transform .2s;font-size:11px}
+.project-header.collapsed .collapse-icon{transform:rotate(-90deg)}
+
+/* TASKS */
+.tasks-container{margin-left:16px;border-left:2px solid var(--border)}
+.task-row{display:flex;align-items:center;gap:10px;padding:8px 12px 8px 16px;border-bottom:1px solid var(--border);transition:background .1s}
+.task-row:last-child{border-bottom:none}
+.task-row:hover{background:var(--bg)}
+.task-name{flex:1;min-width:100px;font-size:13px}
+.task-assignee{font-size:12px;color:var(--text-muted);min-width:110px;display:flex;align-items:center;gap:5px}
+.avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0}
+.date-range{font-size:11px;color:var(--text-hint);min-width:140px}
+.status-badge{padding:2px 9px;border-radius:10px;font-size:11px;font-weight:500;white-space:nowrap}
+.status-todo{background:var(--bg);color:var(--text-muted);border:1px solid var(--border-strong)}
+.status-inprog{background:var(--amber-light);color:var(--amber)}
+.status-done{background:var(--green-light);color:var(--green)}
+.status-review{background:var(--purple-light);color:var(--purple)}
+.progress-cell{display:flex;align-items:center;gap:6px;min-width:90px}
+.progress-mini{width:55px;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-mini-fill{height:100%;border-radius:3px}
+.progress-num{font-size:12px;color:var(--text-muted);min-width:28px}
+.row-actions{display:flex;gap:4px;opacity:0;transition:opacity .15s}
+.task-row:hover .row-actions{opacity:1}
+.mine-tag{font-size:10px;padding:1px 6px;border-radius:8px;background:var(--accent-light);color:var(--accent);font-weight:500;white-space:nowrap}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.filter-chip{padding:4px 12px;border-radius:20px;font-size:12px;border:1px solid var(--border-strong);background:var(--surface);cursor:pointer;transition:all .15s;color:var(--text-muted)}
+.filter-chip.active{background:var(--accent);border-color:var(--accent);color:white}
+.filter-chip:hover:not(.active){border-color:var(--accent);color:var(--accent)}
+.member-filter-chip{padding:4px 10px;border-radius:20px;font-size:12px;border:1px solid var(--border-strong);background:var(--surface);cursor:pointer;transition:all .15s;color:var(--text-muted);display:flex;align-items:center;gap:5px}
+.member-filter-chip.active{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--radius-lg);padding:28px;width:480px;max-width:95vw;box-shadow:0 8px 32px rgba(0,0,0,.15);max-height:90vh;overflow-y:auto}
+.modal-title{font-size:17px;font-weight:600;margin-bottom:20px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:22px}
+
+/* GANTT */
+.gantt-wrapper{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.gantt-toolbar{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--bg)}
+.gantt-scroll{overflow-x:auto}
+.gantt-table{border-collapse:collapse;width:100%;min-width:800px}
+.gantt-table th{background:var(--bg);border:1px solid var(--border);padding:5px 6px;font-size:11px;font-weight:500;color:var(--text-muted);text-align:center;white-space:nowrap}
+.gantt-table th.day-today{background:var(--accent-light);color:var(--accent);font-weight:600}
+.gantt-name-col{min-width:190px;max-width:190px;border:1px solid var(--border);padding:5px 10px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gantt-name-col.project{background:var(--bg);font-weight:600}
+.gantt-cell{border:1px solid var(--border);padding:2px;height:27px;min-width:20px;position:relative}
+.gantt-cell.today-col{background:rgba(45,106,159,.04)}
+.gantt-bar{height:19px;border-radius:3px;position:absolute;top:4px;left:0;right:0;display:flex;align-items:center;overflow:hidden}
+.gantt-bar-fill{height:100%;border-radius:3px 0 0 3px}
+.gantt-month-header th{border:1px solid var(--border);padding:5px 10px;text-align:center;font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-light)}
+
+/* MEMBER VIEW */
+.member-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:24px}
+.member-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;cursor:pointer;transition:all .15s}
+.member-card:hover{border-color:var(--accent);box-shadow:0 2px 12px rgba(45,106,159,.12)}
+.member-card.selected{border-color:var(--accent);border-width:2px;background:var(--accent-light)}
+.member-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;margin-bottom:10px}
+.member-name{font-weight:600;font-size:14px;margin-bottom:2px}
+.member-role{font-size:12px;color:var(--text-muted);margin-bottom:10px}
+.member-stats{display:flex;gap:8px;font-size:12px}
+.mstat{padding:3px 8px;border-radius:6px;background:var(--bg)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:white;padding:10px 18px;border-radius:var(--radius);font-size:13px;z-index:300;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+
+/* MANAGE USERS TAB */
+.users-table{width:100%;border-collapse:collapse}
+.users-table th,.users-table td{padding:10px 14px;border-bottom:1px solid var(--border);font-size:13px;text-align:left}
+.users-table th{background:var(--bg);font-weight:500;color:var(--text-muted)}
+.users-table tr:hover td{background:var(--bg)}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN SCREEN ===== -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">📋</div>
+    <div class="login-title">แผนการปฏิบัติงาน</div>
+    <div class="login-sub">ฝ่ายวิจัยและพัฒนา — เลือกผู้ใช้งาน</div>
+    <div class="login-who" id="who-list"></div>
+    <div class="form-group">
+      <label class="form-label">รหัสผ่าน</label>
+      <input type="password" class="form-input" id="login-pin" maxlength="6" placeholder="ใส่รหัสผ่าน" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="login-error" id="login-error"></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="doLogin()">เข้าสู่ระบบ</button>
+    <div style="margin-top:14px;padding:12px;background:var(--bg);border-radius:var(--radius);font-size:12px;color:var(--text-muted)">
+      <div style="font-weight:500;margin-bottom:4px">รหัสผ่านเริ่มต้น:</div>
+      <div>👑 ผู้จัดการ: <b>admin</b> &nbsp;|&nbsp; 👤 หัวหน้า: <b>lead</b> &nbsp;|&nbsp; 👥 สมาชิก: <b>1234</b></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== APP SCREEN ===== -->
+<div id="app-screen">
+  <header class="app-header">
+    <div class="app-title">📋 แผนการปฏิบัติงาน <span>ฝ่ายวิจัยและพัฒนา</span></div>
+    <div class="header-right">
+      <div id="current-user-badge" style="display:flex;align-items:center;gap:8px;font-size:13px"></div>
+      <button class="btn btn-sm" onclick="doLogout()">ออกจากระบบ</button>
+    </div>
+  </header>
+  <nav class="tab-bar">
+    <button class="tab-btn active" id="tab-tasks" onclick="switchTab('tasks',this)">📋 รายการงาน</button>
+    <button class="tab-btn" id="tab-gantt" onclick="switchTab('gantt',this)">📅 Gantt Chart</button>
+    <button class="tab-btn" id="tab-overview" onclick="switchTab('overview',this)">📊 ภาพรวมทีม</button>
+    <button class="tab-btn hidden-tab" id="tab-members" onclick="switchTab('members',this)">👥 สมาชิก</button>
+    <button class="tab-btn hidden-tab" id="tab-users" onclick="switchTab('users',this)">⚙️ จัดการผู้ใช้</button>
+  </nav>
+  <main class="main">
+
+    <!-- TASKS VIEW -->
+    <div class="view active" id="view-tasks">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <div class="filter-bar" style="margin-bottom:0">
+          <span style="font-size:12px;color:var(--text-muted);font-weight:500">สถานะ:</span>
+          <button class="filter-chip active" onclick="filterStatus('all',this)">ทั้งหมด</button>
+          <button class="filter-chip" onclick="filterStatus('todo',this)">รอดำเนินการ</button>
+          <button class="filter-chip" onclick="filterStatus('inprog',this)">กำลังดำเนินการ</button>
+          <button class="filter-chip" onclick="filterStatus('review',this)">รอตรวจสอบ</button>
+          <button class="filter-chip" onclick="filterStatus('done',this)">เสร็จสิ้น</button>
+        </div>
+        <div id="task-action-btns" style="display:flex;gap:8px"></div>
+      </div>
+      <div id="project-list"></div>
+    </div>
+
+    <!-- GANTT VIEW -->
+    <div class="view" id="view-gantt">
+      <div class="gantt-wrapper">
+        <div class="gantt-toolbar">
+          <span style="font-size:13px;font-weight:500">Gantt Chart</span>
+          <select class="form-select" style="width:auto;padding:4px 8px;font-size:12px" id="gantt-month" onchange="renderGantt()"></select>
+          <select class="form-select" style="width:auto;padding:4px 8px;font-size:12px" id="gantt-year" onchange="renderGantt()"></select>
+          <select class="form-select" style="width:auto;padding:4px 8px;font-size:12px" id="gantt-member-filter" onchange="renderGantt()">
+            <option value="all">ทุกคน</option>
+          </select>
+        </div>
+        <div class="gantt-scroll"><div id="gantt-container"></div></div>
+      </div>
+    </div>
+
+    <!-- OVERVIEW VIEW -->
+    <div class="view" id="view-overview">
+      <div class="summary-grid" id="summary-stats"></div>
+      <div id="overview-member-cards"></div>
+      <div id="project-summary"></div>
+    </div>
+
+    <!-- MEMBERS VIEW (manager only) -->
+    <div class="view" id="view-members">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-weight:600;font-size:16px">ดูงานรายบุคคล</div>
+      </div>
+      <div class="member-grid" id="members-grid"></div>
+      <div id="member-detail-section"></div>
+    </div>
+
+    <!-- USERS MANAGEMENT VIEW (manager only) -->
+    <div class="view" id="view-users">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-weight:600;font-size:16px">จัดการผู้ใช้งาน</div>
+        <button class="btn btn-primary" onclick="openAddUserModal()">+ เพิ่มผู้ใช้</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="users-table" id="users-table"></table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Add/Edit Task Modal -->
+<div class="modal-overlay" id="task-modal">
+  <div class="modal">
+    <div class="modal-title" id="task-modal-title">เพิ่มงานใหม่</div>
+    <div class="form-group"><label class="form-label">ชื่องาน *</label><input type="text" class="form-input" id="task-name" placeholder="ระบุชื่องาน"></div>
+    <div class="form-group"><label class="form-label">โปรเจกต์ *</label><select class="form-select" id="task-project"></select></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">ขั้นตอน</label>
+        <select class="form-select" id="task-phase">
+          <option value="">ไม่ระบุ</option>
+          <option value="1">แฟ้ม 1: รวบรวมข้อมูล</option>
+          <option value="2">แฟ้ม 2: เปรียบเทียบสเปก</option>
+          <option value="3">แฟ้ม 3: เตรียมผลิต</option>
+          <option value="4">แฟ้ม 4: ผลิต</option>
+          <option value="5">แฟ้ม 5: ทดสอบ</option>
+          <option value="6">แฟ้ม 6: เอกสาร</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">มอบหมายให้</label><select class="form-select" id="task-assignee-sel"></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">วันเริ่มต้น</label><input type="date" class="form-input" id="task-start"></div>
+      <div class="form-group"><label class="form-label">วันสิ้นสุด</label><input type="date" class="form-input" id="task-end"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">สถานะ</label>
+        <select class="form-select" id="task-status">
+          <option value="todo">รอดำเนินการ</option>
+          <option value="inprog">กำลังดำเนินการ</option>
+          <option value="review">รอตรวจสอบ</option>
+          <option value="done">เสร็จสิ้น</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">ความคืบหน้า (%)</label><input type="number" class="form-input" id="task-progress" min="0" max="100" value="0"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('task-modal')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveTask()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Project Modal -->
+<div class="modal-overlay" id="project-modal">
+  <div class="modal">
+    <div class="modal-title" id="proj-modal-title">เพิ่มโปรเจกต์</div>
+    <div class="form-group"><label class="form-label">ชื่อโปรเจกต์ *</label><input type="text" class="form-input" id="proj-name" placeholder="เช่น Smart Traffic"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">วันเริ่มต้น</label><input type="date" class="form-input" id="proj-start"></div>
+      <div class="form-group"><label class="form-label">วันสิ้นสุด</label><input type="date" class="form-input" id="proj-end"></div>
+    </div>
+    <div class="form-group"><label class="form-label">สี</label>
+      <select class="form-select" id="proj-color">
+        <option value="#2d6a9f">น้ำเงิน</option><option value="#2d7a4f">เขียว</option>
+        <option value="#a05c10">ส้ม</option><option value="#6b3fa0">ม่วง</option>
+        <option value="#b93333">แดง</option><option value="#1a6e7e">น้ำเงินเขียว</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('project-modal')">ยกเลิก</button>
+      <button class="btn btn-primary" id="proj-save-btn" onclick="saveProject()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit User Modal -->
+<div class="modal-overlay" id="user-modal">
+  <div class="modal">
+    <div class="modal-title" id="user-modal-title">เพิ่มผู้ใช้งาน</div>
+    <div class="form-group"><label class="form-label">ชื่อ-นามสกุล *</label><input type="text" class="form-input" id="u-name"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">ระดับสิทธิ์</label>
+        <select class="form-select" id="u-role">
+          <option value="manager">👑 ผู้จัดการ</option>
+          <option value="lead">👤 หัวหน้างาน</option>
+          <option value="member" selected>👥 สมาชิก</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">รหัสผ่าน</label><input type="password" class="form-input" id="u-pin" placeholder="ตั้งรหัสผ่าน"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('user-modal')">ยกเลิก</button>
+      <button class="btn btn-primary" id="user-save-btn" onclick="saveUser()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== DATA =====
+const ROLE_LABEL = {manager:'ผู้จัดการ', lead:'หัวหน้างาน', member:'สมาชิก'};
+const ROLE_BADGE = {manager:'role-manager', lead:'role-lead', member:'role-member'};
+const ROLE_ICON = {manager:'👑', lead:'👤', member:'👥'};
+const AVATAR_COLORS = ['#2d6a9f','#2d7a4f','#a05c10','#6b3fa0','#b93333','#1a6e7e','#8b5a2b','#4a7a8a'];
+
+let users = [
+  {id:1, name:'นางสาว จิตภา คงจิ๊', role:'manager', pin:'admin', color:'#6b3fa0'},
+  {id:2, name:'นายสมชาย ใจดี', role:'lead', pin:'lead', color:'#2d6a9f'},
+  {id:3, name:'นางสาวสุภา รักงาน', role:'member', pin:'1234', color:'#2d7a4f'},
+  {id:4, name:'นายวิชัย สมาร์ท', role:'member', pin:'1234', color:'#a05c10'},
+  {id:5, name:'นางสาวกมลา ดีงาม', role:'member', pin:'1234', color:'#b93333'},
+];
+
+let projects = [
+  {id:1, name:'Smart Traffic', color:'#1a6e7e', start:'2024-07-23', end:'2024-08-31'},
+  {id:2, name:'Smart Dashboard Phase 1', color:'#2d6a9f', start:'2024-07-23', end:'2024-08-31'},
+  {id:3, name:'Smart Dashboard Phase 2', color:'#6b3fa0', start:'2024-07-25', end:'2024-08-31'},
+  {id:4, name:'Smart Water Meter', color:'#2d7a4f', start:'2024-07-25', end:'2024-08-31'},
+  {id:5, name:'ไฟจราจรอนุสรณ์สถาน', color:'#a05c10', start:'2024-07-25', end:'2024-08-31'},
+];
+
+let tasks = [
+  {id:1, projectId:1, name:'แฟ้ม 6: เอกสาร', phase:'6', assigneeId:3, start:'2024-07-25', end:'2024-07-28', status:'done', progress:100},
+  {id:2, projectId:2, name:'แฟ้ม 4: ผลิต', phase:'4', assigneeId:4, start:'2024-07-23', end:'2024-07-31', status:'done', progress:100},
+  {id:3, projectId:2, name:'แฟ้ม 5: ทดสอบ', phase:'5', assigneeId:3, start:'2024-08-01', end:'2024-08-15', status:'inprog', progress:60},
+  {id:4, projectId:2, name:'แฟ้ม 6: เอกสาร', phase:'6', assigneeId:5, start:'2024-08-20', end:'2024-08-31', status:'todo', progress:0},
+  {id:5, projectId:3, name:'แฟ้ม 1: รวบรวมข้อมูล', phase:'1', assigneeId:4, start:'2024-07-25', end:'2024-08-05', status:'done', progress:100},
+  {id:6, projectId:3, name:'แฟ้ม 2: เปรียบเทียบสเปก', phase:'2', assigneeId:5, start:'2024-08-01', end:'2024-08-10', status:'done', progress:100},
+  {id:7, projectId:3, name:'แฟ้ม 3: เตรียมผลิต', phase:'3', assigneeId:3, start:'2024-08-08', end:'2024-08-20', status:'inprog', progress:45},
+  {id:8, projectId:3, name:'แฟ้ม 4: ผลิต', phase:'4', assigneeId:4, start:'2024-08-18', end:'2024-08-28', status:'todo', progress:0},
+  {id:9, projectId:3, name:'แฟ้ม 5: ทดสอบ', phase:'5', assigneeId:5, start:'2024-08-26', end:'2024-09-05', status:'todo', progress:0},
+  {id:10, projectId:3, name:'แฟ้ม 6: เอกสาร', phase:'6', assigneeId:3, start:'2024-09-03', end:'2024-09-10', status:'todo', progress:0},
+  {id:11, projectId:4, name:'แฟ้ม 1: รวบรวมข้อมูล', phase:'1', assigneeId:4, start:'2024-07-25', end:'2024-08-05', status:'done', progress:100},
+  {id:12, projectId:4, name:'แฟ้ม 2: เปรียบเทียบสเปก', phase:'2', assigneeId:3, start:'2024-08-01', end:'2024-08-12', status:'inprog', progress:70},
+  {id:13, projectId:4, name:'แฟ้ม 3: เตรียมผลิต', phase:'3', assigneeId:5, start:'2024-08-10', end:'2024-08-22', status:'todo', progress:0},
+  {id:14, projectId:4, name:'แฟ้ม 4: ผลิต', phase:'4', assigneeId:4, start:'2024-08-20', end:'2024-08-31', status:'todo', progress:0},
+  {id:15, projectId:5, name:'แฟ้ม 3: เตรียมผลิต', phase:'3', assigneeId:5, start:'2024-07-25', end:'2024-08-05', status:'done', progress:100},
+  {id:16, projectId:5, name:'แฟ้ม 4: ผลิต', phase:'4', assigneeId:3, start:'2024-08-03', end:'2024-08-18', status:'inprog', progress:55},
+  {id:17, projectId:5, name:'แฟ้ม 5: ทดสอบ', phase:'5', assigneeId:4, start:'2024-08-16', end:'2024-08-25', status:'todo', progress:0},
+  {id:18, projectId:5, name:'แฟ้ม 6: เอกสาร', phase:'6', assigneeId:5, start:'2024-08-24', end:'2024-08-31', status:'todo', progress:0},
+];
+
+let nextId = 100;
+let collapsedProjects = new Set();
+let currentFilter = 'all';
+let currentUser = null;
+let editingTaskId = null;
+let editingProjId = null;
+let editingUserId = null;
+let selectedMemberId = null;
+const today = new Date(); today.setHours(0,0,0,0);
+const MONTHS_TH = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+
+// ===== HELPERS =====
+function todayStr(){return today.toISOString().split('T')[0]}
+function addDays(s,n){const d=new Date(s);d.setDate(d.getDate()+n);return d.toISOString().split('T')[0]}
+function formatDate(s){if(!s)return'';const d=new Date(s);return`${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()+543}`}
+function getInitials(name){if(!name)return'?';const p=name.replace(/^(นาย|นางสาว|นาง)\s*/,'').split(' ');return p.length>=2?p[0][0]+p[1][0]:name[0]}
+function getProgressColor(p){return p>=100?'#2d7a4f':p>=60?'#2d6a9f':p>=30?'#a05c10':'#9e9b93'}
+function calcProjectProgress(pid){const t=tasks.filter(t=>t.projectId===pid);if(!t.length)return 0;return Math.round(t.reduce((s,t)=>s+t.progress,0)/t.length)}
+function getUserById(id){return users.find(u=>u.id===id)}
+function canEdit(task){
+  if(!currentUser)return false;
+  if(currentUser.role==='manager'||currentUser.role==='lead')return true;
+  return task.assigneeId===currentUser.id;
+}
+function canManage(){return currentUser&&(currentUser.role==='manager'||currentUser.role==='lead')}
+
+const STATUS_LABEL={todo:'รอดำเนินการ',inprog:'กำลังดำเนินการ',review:'รอตรวจสอบ',done:'เสร็จสิ้น'};
+
+// ===== LOGIN =====
+function buildLoginWho(){
+  const el=document.getElementById('who-list');
+  el.innerHTML=users.map(u=>`
+    <div class="who-btn" id="who-${u.id}" onclick="selectWho(${u.id})">
+      <span class="who-icon">${ROLE_ICON[u.role]}</span>
+      <span style="font-size:11px">${u.name.replace(/^(นาย|นางสาว|นาง)\s*/,'').split(' ')[0]}</span>
+    </div>
+  `).join('');
+}
+let selectedWhoId = null;
+function selectWho(id){
+  selectedWhoId=id;
+  document.querySelectorAll('.who-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('who-'+id).classList.add('selected');
+  document.getElementById('login-pin').focus();
+}
+function doLogin(){
+  const pin=document.getElementById('login-pin').value;
+  if(!selectedWhoId){document.getElementById('login-error').textContent='กรุณาเลือกผู้ใช้งาน';return}
+  const u=users.find(u=>u.id===selectedWhoId);
+  if(!u||u.pin!==pin){document.getElementById('login-error').textContent='รหัสผ่านไม่ถูกต้อง';return}
+  currentUser=u;
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app-screen').style.display='block';
+  setupApp();
+}
+function doLogout(){
+  currentUser=null;selectedWhoId=null;
+  document.getElementById('login-pin').value='';
+  document.getElementById('login-error').textContent='';
+  document.querySelectorAll('.who-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app-screen').style.display='none';
+}
+
+function setupApp(){
+  // Badge
+  const u=currentUser;
+  document.getElementById('current-user-badge').innerHTML=`
+    <div class="avatar" style="background:${u.color}22;color:${u.color};width:30px;height:30px;font-size:12px">${getInitials(u.name)}</div>
+    <span>${u.name.replace(/^(นาย|นางสาว|นาง)\s*/,'')}</span>
+    <span class="role-badge ${ROLE_BADGE[u.role]}">${ROLE_ICON[u.role]} ${ROLE_LABEL[u.role]}</span>
+  `;
+  // Show/hide tabs
+  if(u.role==='manager'){
+    document.getElementById('tab-members').classList.remove('hidden-tab');
+    document.getElementById('tab-users').classList.remove('hidden-tab');
+  } else {
+    document.getElementById('tab-members').classList.add('hidden-tab');
+    document.getElementById('tab-users').classList.add('hidden-tab');
+  }
+  // Action buttons
+  const btns=document.getElementById('task-action-btns');
+  if(canManage()){
+    btns.innerHTML=`<button class="btn btn-primary" onclick="openAddTask()">+ เพิ่มงาน</button><button class="btn" onclick="openAddProject()">+ โปรเจกต์</button>`;
+  } else {
+    btns.innerHTML='';
+  }
+  // Gantt member filter
+  const gf=document.getElementById('gantt-member-filter');
+  gf.innerHTML='<option value="all">ทุกคน</option>'+users.filter(u=>u.role==='member').map(u=>`<option value="${u.id}">${u.name.replace(/^(นาย|นางสาว|นาง)\s*/,'')}</option>`).join('');
+  currentFilter='all';
+  collapsedProjects.clear();
+  renderTasks();
+  renderGanttSelects();
+}
+
+// ===== TASKS =====
+function renderTasks(){
+  const list=document.getElementById('project-list');
+  list.innerHTML='';
+  const filtered=currentFilter==='all'?tasks:tasks.filter(t=>t.status===currentFilter);
+
+  projects.forEach(p=>{
+    const pTasks=filtered.filter(t=>t.projectId===p.id);
+    if(currentFilter!=='all'&&!pTasks.length)return;
+    const prog=calcProjectProgress(p.id);
+    const collapsed=collapsedProjects.has(p.id);
+    const sec=document.createElement('div');
+    sec.className='project-section';
+
+    const manageBtn=canManage()?`
+      <button class="btn btn-sm" onclick="event.stopPropagation();editProject(${p.id})">✏️</button>
+      <button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteProject(${p.id})">🗑️</button>
+    `:'';
+
+    sec.innerHTML=`
+      <div class="project-header ${collapsed?'collapsed':''}" onclick="toggleProject(${p.id})">
+        <div style="width:10px;height:10px;border-radius:2px;background:${p.color};flex-shrink:0"></div>
+        <div class="project-name">${p.name}</div>
+        <div style="font-size:12px;color:var(--text-muted)">${pTasks.length} งาน</div>
+        <div class="project-progress-bar"><div class="project-progress-fill" style="width:${prog}%;background:${p.color}"></div></div>
+        <div class="proj-pct">${prog}%</div>
+        ${manageBtn}
+        <span class="collapse-icon">▼</span>
+      </div>
+      <div class="tasks-container" id="tasks-${p.id}" style="${collapsed?'display:none':''}">
+        ${pTasks.length===0?`<div style="padding:12px 16px;color:var(--text-hint);font-size:13px">ไม่มีงาน${canManage()?` <button class="btn btn-sm btn-primary" onclick="openAddTask(${p.id})" style="margin-left:8px">+ เพิ่มงาน</button>`:''}</div>`:''}
+        ${pTasks.map(t=>{
+          const assignee=getUserById(t.assigneeId);
+          const isMine=t.assigneeId===currentUser.id;
+          const editable=canEdit(t);
+          return`<div class="task-row">
+            <div style="width:9px;height:9px;border-radius:50%;background:${p.color};flex-shrink:0;opacity:.6"></div>
+            <div class="task-name">${t.name}${isMine?'<span class="mine-tag" style="margin-left:6px">ของฉัน</span>':''}</div>
+            <div class="task-assignee">
+              ${assignee?`<div class="avatar" style="background:${assignee.color}22;color:${assignee.color}">${getInitials(assignee.name)}</div><span>${assignee.name.replace(/^(นาย|นางสาว|นาง)\s*/,'').split(' ')[0]}</span>`:'<span style="color:var(--text-hint)">—</span>'}
+            </div>
+            <div class="date-range">📅 ${formatDate(t.start)} – ${formatDate(t.end)}</div>
+            <div class="progress-cell">
+              <div class="progress-mini"><div class="progress-mini-fill" style="width:${t.progress}%;background:${getProgressColor(t.progress)}"></div></div>
+              <span class="progress-num">${t.progress}%</span>
+            </div>
+            <span class="status-badge status-${t.status}">${STATUS_LABEL[t.status]}</span>
+            <div class="row-actions">
+              ${editable?`<button class="btn btn-sm" onclick="editTask(${t.id})">✏️</button>`:''}
+              ${canManage()?`<button class="btn btn-sm btn-danger" onclick="deleteTask(${t.id})">🗑️</button>`:''}
+            </div>
+          </div>`;
+        }).join('')}
+        ${pTasks.length>0&&canManage()?`<div style="padding:8px 16px"><button class="btn btn-sm" onclick="openAddTask(${p.id})">+ เพิ่มงาน</button></div>`:''}
+      </div>
+    `;
+    list.appendChild(sec);
+  });
+}
+
+function toggleProject(pid){
+  collapsedProjects.has(pid)?collapsedProjects.delete(pid):collapsedProjects.add(pid);
+  renderTasks();
+}
+
+function filterStatus(s,btn){
+  currentFilter=s;
+  document.querySelectorAll('.filter-chip').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTasks();
+}
+
+// ===== TASK MODAL =====
+function openAddTask(presetPid){
+  editingTaskId=null;
+  document.getElementById('task-modal-title').textContent='เพิ่มงานใหม่';
+  document.getElementById('task-name').value='';
+  document.getElementById('task-start').value=todayStr();
+  document.getElementById('task-end').value=addDays(todayStr(),7);
+  document.getElementById('task-status').value='todo';
+  document.getElementById('task-progress').value=0;
+  document.getElementById('task-phase').value='';
+  populateProjectSelect(presetPid);
+  populateAssigneeSelect(currentUser.id);
+  document.getElementById('task-modal').classList.add('open');
+}
+function editTask(id){
+  const t=tasks.find(t=>t.id===id);
+  if(!t)return;
+  editingTaskId=id;
+  document.getElementById('task-modal-title').textContent='แก้ไขงาน';
+  document.getElementById('task-name').value=t.name;
+  document.getElementById('task-start').value=t.start||'';
+  document.getElementById('task-end').value=t.end||'';
+  document.getElementById('task-status').value=t.status;
+  document.getElementById('task-progress').value=t.progress;
+  document.getElementById('task-phase').value=t.phase||'';
+  populateProjectSelect(t.projectId);
+  populateAssigneeSelect(t.assigneeId);
+  // If member: lock assignee to self
+  if(currentUser.role==='member'){
+    document.getElementById('task-assignee-sel').disabled=true;
+  }
+  document.getElementById('task-modal').classList.add('open');
+}
+function populateProjectSelect(sel){
+  document.getElementById('task-project').innerHTML=projects.map(p=>`<option value="${p.id}" ${p.id===sel?'selected':''}>${p.name}</option>`).join('');
+}
+function populateAssigneeSelect(sel){
+  const memberUsers=users.filter(u=>u.role!=='manager'||currentUser.role==='manager');
+  document.getElementById('task-assignee-sel').innerHTML=`<option value="">ไม่ระบุ</option>`+memberUsers.map(u=>`<option value="${u.id}" ${u.id===sel?'selected':''}>${u.name.replace(/^(นาย|นางสาว|นาง)\s*/,'')}</option>`).join('');
+  document.getElementById('task-assignee-sel').disabled=false;
+}
+function saveTask(){
+  const name=document.getElementById('task-name').value.trim();
+  if(!name){alert('กรุณาระบุชื่องาน');return}
+  const assigneeVal=document.getElementById('task-assignee-sel').value;
+  const data={
+    projectId:parseInt(document.getElementById('task-project').value),
+    name,
+    phase:document.getElementById('task-phase').value,
+    assigneeId:assigneeVal?parseInt(assigneeVal):null,
+    start:document.getElementById('task-start').value,
+    end:document.getElementById('task-end').value,
+    status:document.getElementById('task-status').value,
+    progress:parseInt(document.getElementById('task-progress').value)||0,
+  };
+  if(editingTaskId){Object.assign(tasks.find(t=>t.id===editingTaskId),data);showToast('แก้ไขงานเรียบร้อย')}
+  else{tasks.push({id:nextId++,...data});showToast('เพิ่มงานเรียบร้อย')}
+  closeModal('task-modal');refreshAll();
+}
+function deleteTask(id){
+  if(!confirm('ลบงานนี้?'))return;
+  tasks=tasks.filter(t=>t.id!==id);
+  showToast('ลบงานเรียบร้อย');refreshAll();
+}
+
+// ===== PROJECT MODAL =====
+function openAddProject(){
+  editingProjId=null;
+  document.getElementById('proj-modal-title').textContent='เพิ่มโปรเจกต์';
+  document.getElementById('proj-name').value='';
+  document.getElementById('proj-start').value=todayStr();
+  document.getElementById('proj-end').value=addDays(todayStr(),30);
+  document.getElementById('proj-color').value='#2d6a9f';
+  document.getElementById('proj-save-btn').onclick=saveProject;
+  document.getElementById('project-modal').classList.add('open');
+}
+function editProject(id){
+  const p=projects.find(p=>p.id===id);if(!p)return;
+  editingProjId=id;
+  document.getElementById('proj-modal-title').textContent='แก้ไขโปรเจกต์';
+  document.getElementById('proj-name').value=p.name;
+  document.getElementById('proj-start').value=p.start;
+  document.getElementById('proj-end').value=p.end;
+  document.getElementById('proj-color').value=p.color;
+  document.getElementById('proj-save-btn').onclick=()=>saveProject();
+  document.getElementById('project-modal').classList.add('open');
+}
+function saveProject(){
+  const name=document.getElementById('proj-name').value.trim();
+  if(!name){alert('กรุณาระบุชื่อโปรเจกต์');return}
+  const data={name,color:document.getElementById('proj-color').value,start:document.getElementById('proj-start').value,end:document.getElementById('proj-end').value};
+  if(editingProjId){Object.assign(projects.find(p=>p.id===editingProjId),data);showToast('แก้ไขโปรเจกต์เรียบร้อย')}
+  else{projects.push({id:nextId++,...data});showToast('เพิ่มโปรเจกต์เรียบร้อย')}
+  closeModal('project-modal');refreshAll();
+}
+function deleteProject(id){
+  if(!confirm('ลบโปรเจกต์และงานทั้งหมดในโปรเจกต์?'))return;
+  projects=projects.filter(p=>p.id!==id);
+  tasks=tasks.filter(t=>t.projectId!==id);
+  showToast('ลบโปรเจกต์เรียบร้อย');refreshAll();
+}
+
+// ===== USERS MANAGEMENT =====
+function renderUsersTable(){
+  const tbl=document.getElementById('users-table');
+  tbl.innerHTML=`<thead><tr><th>ชื่อ</th><th>ระดับสิทธิ์</th><th>งานที่รับผิดชอบ</th><th>จัดการ</th></tr></thead><tbody>`+
+  users.map(u=>{
+    const myTasks=tasks.filter(t=>t.assigneeId===u.id);
+    return`<tr>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="background:${u.color}22;color:${u.color};width:32px;height:32px">${getInitials(u.name)}</div>${u.name}</div></td>
+      <td><span class="role-badge ${ROLE_BADGE[u.role]}">${ROLE_ICON[u.role]} ${ROLE_LABEL[u.role]}</span></td>
+      <td>${myTasks.length} งาน (เสร็จ ${myTasks.filter(t=>t.status==='done').length})</td>
+      <td style="display:flex;gap:6px">
+        <button class="btn btn-sm" onclick="editUser(${u.id})">✏️ แก้ไข</button>
+        ${u.id!==currentUser.id?`<button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id})">🗑️</button>`:''}
+      </td>
+    </tr>`;
+  }).join('')+'</tbody>';
+}
+function openAddUserModal(){
+  editingUserId=null;
+  document.getElementById('user-modal-title').textContent='เพิ่มผู้ใช้งาน';
+  document.getElementById('u-name').value='';
+  document.getElementById('u-role').value='member';
+  document.getElementById('u-pin').value='';
+  document.getElementById('user-modal').classList.add('open');
+}
+function editUser(id){
+  const u=users.find(u=>u.id===id);if(!u)return;
+  editingUserId=id;
+  document.getElementById('user-modal-title').textContent='แก้ไขผู้ใช้งาน';
+  document.getElementById('u-name').value=u.name;
+  document.getElementById('u-role').value=u.role;
+  document.getElementById('u-pin').value='';
+  document.getElementById('user-modal').classList.add('open');
+}
+function saveUser(){
+  const name=document.getElementById('u-name').value.trim();
+  if(!name){alert('กรุณาระบุชื่อ');return}
+  const pin=document.getElementById('u-pin').value;
+  const role=document.getElementById('u-role').value;
+  if(editingUserId){
+    const u=users.find(u=>u.id===editingUserId);
+    u.name=name;u.role=role;
+    if(pin)u.pin=pin;
+    showToast('แก้ไขผู้ใช้เรียบร้อย');
+  } else {
+    if(!pin){alert('กรุณาตั้งรหัสผ่าน');return}
+    users.push({id:nextId++,name,role,pin,color:AVATAR_COLORS[users.length%AVATAR_COLORS.length]});
+    showToast('เพิ่มผู้ใช้เรียบร้อย');
+    buildLoginWho();
+  }
+  closeModal('user-modal');renderUsersTable();renderMembersGrid();
+}
+function deleteUser(id){
+  if(!confirm('ลบผู้ใช้งานนี้?'))return;
+  users=users.filter(u=>u.id!==id);
+  tasks.forEach(t=>{if(t.assigneeId===id)t.assigneeId=null});
+  showToast('ลบผู้ใช้เรียบร้อย');
+  renderUsersTable();renderMembersGrid();buildLoginWho();
+}
+
+// ===== MEMBERS VIEW =====
+function renderMembersGrid(){
+  const members=users.filter(u=>u.role!=='manager');
+  const grid=document.getElementById('members-grid');
+  grid.innerHTML=members.map(u=>{
+    const myTasks=tasks.filter(t=>t.assigneeId===u.id);
+    const done=myTasks.filter(t=>t.status==='done').length;
+    const inprog=myTasks.filter(t=>t.status==='inprog').length;
+    const prog=myTasks.length?Math.round(myTasks.reduce((s,t)=>s+t.progress,0)/myTasks.length):0;
+    return`<div class="member-card ${selectedMemberId===u.id?'selected':''}" onclick="selectMember(${u.id})">
+      <div class="member-avatar" style="background:${u.color}22;color:${u.color}">${getInitials(u.name)}</div>
+      <div class="member-name">${u.name}</div>
+      <div class="member-role"><span class="role-badge ${ROLE_BADGE[u.role]}">${ROLE_ICON[u.role]} ${ROLE_LABEL[u.role]}</span></div>
+      <div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:8px">
+        <div style="height:100%;width:${prog}%;background:${u.color};border-radius:3px;transition:width .5s"></div>
+      </div>
+      <div class="member-stats">
+        <span class="mstat">📋 ${myTasks.length} งาน</span>
+        <span class="mstat" style="background:var(--green-light);color:var(--green)">✓ ${done}</span>
+        <span class="mstat" style="background:var(--amber-light);color:var(--amber)">⏳ ${inprog}</span>
+      </div>
+    </div>`;
+  }).join('');
+  if(selectedMemberId)renderMemberDetail(selectedMemberId);
+}
+
+function selectMember(id){
+  selectedMemberId=id;
+  renderMembersGrid();
+}
+
+function renderMemberDetail(uid){
+  const u=users.find(u=>u.id===uid);
+  if(!u)return;
+  const myTasks=tasks.filter(t=>t.assigneeId===uid);
+  const detail=document.getElementById('member-detail-section');
+  detail.innerHTML=`
+    <div class="card" style="margin-top:0">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div class="avatar" style="background:${u.color}22;color:${u.color};width:44px;height:44px;font-size:16px">${getInitials(u.name)}</div>
+        <div><div style="font-weight:600;font-size:15px">${u.name}</div><div style="font-size:12px;color:var(--text-muted)">${ROLE_LABEL[u.role]} — ${myTasks.length} งาน</div></div>
+        <button class="btn btn-primary btn-sm" style="margin-left:auto" onclick="openAddTask();document.getElementById('task-assignee-sel').value=${uid}">+ มอบหมายงาน</button>
+      </div>
+      ${projects.map(p=>{
+        const pt=myTasks.filter(t=>t.projectId===p.id);
+        if(!pt.length)return'';
+        return`<div style="margin-bottom:14px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <div style="width:9px;height:9px;border-radius:2px;background:${p.color}"></div>
+            <span style="font-weight:500;font-size:13px">${p.name}</span>
+          </div>
+          ${pt.map(t=>`<div class="task-row" style="margin-left:16px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:4px">
+            <div class="task-name">${t.name}</div>
+            <div class="progress-cell">
+              <div class="progress-mini"><div class="progress-mini-fill" style="width:${t.progress}%;background:${getProgressColor(t.progress)}"></div></div>
+              <span class="progress-num">${t.progress}%</span>
+            </div>
+            <span class="status-badge status-${t.status}">${STATUS_LABEL[t.status]}</span>
+            <div class="row-actions"><button class="btn btn-sm" onclick="editTask(${t.id})">✏️</button></div>
+          </div>`).join('')}
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+}
+
+// ===== GANTT =====
+function renderGanttSelects(){
+  const mSel=document.getElementById('gantt-month');
+  const ySel=document.getElementById('gantt-year');
+  mSel.innerHTML=MONTHS_TH.map((m,i)=>`<option value="${i}">${m}</option>`).join('');
+  mSel.value=today.getMonth();
+  const yr=today.getFullYear();
+  ySel.innerHTML=[yr-1,yr,yr+1].map(y=>`<option value="${y}">${y+543}</option>`).join('');
+  ySel.value=yr;
+  renderGantt();
+}
+function renderGantt(){
+  const month=parseInt(document.getElementById('gantt-month').value);
+  const year=parseInt(document.getElementById('gantt-year').value);
+  const memberFilter=document.getElementById('gantt-member-filter').value;
+  const days=new Date(year,month+1,0).getDate();
+  const todayD=today.getDate();
+  const isCurMon=today.getMonth()===month&&today.getFullYear()===year;
+
+  let html='<table class="gantt-table"><thead>';
+  html+=`<tr class="gantt-month-header"><th style="min-width:190px;text-align:left">งาน</th><th colspan="${days}">${MONTHS_TH[month]} ${year+543}</th></tr><tr>`;
+  html+='<th class="gantt-name-col" style="background:var(--bg)">ชื่องาน</th>';
+  for(let d=1;d<=days;d++){const isT=isCurMon&&d===todayD;html+=`<th class="${isT?'day-today':''}">${d}</th>`;}
+  html+='</tr></thead><tbody>';
+
+  projects.forEach(p=>{
+    let pTasks=tasks.filter(t=>t.projectId===p.id);
+    if(memberFilter!=='all')pTasks=pTasks.filter(t=>t.assigneeId===parseInt(memberFilter));
+    if(!pTasks.length)return;
+
+    html+=`<tr><td class="gantt-name-col project" style="border-left:3px solid ${p.color}">${p.name}</td>`;
+    for(let d=1;d<=days;d++){const isT=isCurMon&&d===todayD;html+=`<td class="gantt-cell ${isT?'today-col':''}" style="background:${p.color}11"></td>`;}
+    html+='</tr>';
+
+    pTasks.forEach(t=>{
+      const assignee=getUserById(t.assigneeId);
+      const label=assignee?getInitials(assignee.name):'';
+      html+=`<tr><td class="gantt-name-col" style="padding-left:20px">${t.name}${assignee?`<span style="margin-left:4px;font-size:10px;color:${assignee.color}">[${label}]</span>`:''}</td>`;
+      const sD=new Date(t.start),eD=new Date(t.end);
+      for(let d=1;d<=days;d++){
+        const cell=new Date(year,month,d);
+        const inRange=cell>=sD&&cell<=eD;
+        const isFirst=cell.getTime()===sD.getTime()||(cell.getMonth()===month&&cell.getDate()===1&&cell>=sD);
+        const isT=isCurMon&&d===todayD;
+        if(inRange){
+          const bar=isFirst?`<div class="gantt-bar" style="background:${p.color}33;left:0;right:0"><div class="gantt-bar-fill" style="width:${t.progress}%;background:${p.color}"></div></div>`:'';
+          html+=`<td class="gantt-cell ${isT?'today-col':''}" style="background:${p.color}22;position:relative">${bar}</td>`;
+        } else {
+          html+=`<td class="gantt-cell ${isT?'today-col':''}"></td>`;
+        }
+      }
+      html+='</tr>';
+    });
+  });
+  html+='</tbody></table>';
+  document.getElementById('gantt-container').innerHTML=html;
+}
+
+// ===== OVERVIEW =====
+function renderOverview(){
+  const total=tasks.length;
+  const done=tasks.filter(t=>t.status==='done').length;
+  const inprog=tasks.filter(t=>t.status==='inprog').length;
+  const todo=tasks.filter(t=>t.status==='todo'||t.status==='review').length;
+  document.getElementById('summary-stats').innerHTML=`
+    <div class="stat-card c-blue"><div class="stat-label">งานทั้งหมด</div><div class="stat-value">${total}</div></div>
+    <div class="stat-card c-green"><div class="stat-label">เสร็จสิ้น</div><div class="stat-value">${done}</div></div>
+    <div class="stat-card c-amber"><div class="stat-label">กำลังดำเนินการ</div><div class="stat-value">${inprog}</div></div>
+    <div class="stat-card c-muted"><div class="stat-label">รอดำเนินการ</div><div class="stat-value">${todo}</div></div>
+  `;
+
+  // Member summary
+  const memberCards=users.filter(u=>u.role!=='manager').map(u=>{
+    const mt=tasks.filter(t=>t.assigneeId===u.id);
+    const prog=mt.length?Math.round(mt.reduce((s,t)=>s+t.progress,0)/mt.length):0;
+    return`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div class="avatar" style="background:${u.color}22;color:${u.color};width:36px;height:36px">${getInitials(u.name)}</div>
+      <div style="flex:1">
+        <div style="font-weight:500;font-size:13px">${u.name.replace(/^(นาย|นางสาว|นาง)\s*/,'')}</div>
+        <div style="font-size:11px;color:var(--text-muted)">${mt.length} งาน</div>
+      </div>
+      <div style="width:100px">
+        <div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:${prog}%;background:${u.color};border-radius:3px"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);text-align:right;margin-top:2px">${prog}%</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('overview-member-cards').innerHTML=`
+    <div class="card" style="margin-bottom:16px">
+      <div style="font-weight:600;margin-bottom:12px">ความคืบหน้ารายบุคคล</div>
+      ${memberCards}
+    </div>
+  `;
+
+  let projHtml='';
+  projects.forEach(p=>{
+    const pt=tasks.filter(t=>t.projectId===p.id);
+    const prog=calcProjectProgress(p.id);
+    projHtml+=`<div class="card" style="margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div style="width:12px;height:12px;border-radius:3px;background:${p.color}"></div>
+        <div style="font-weight:600;flex:1">${p.name}</div>
+        <div style="font-weight:600;color:${p.color}">${prog}%</div>
+      </div>
+      <div style="height:7px;background:var(--border);border-radius:4px;overflow:hidden">
+        <div style="height:100%;width:${prog}%;background:${p.color};border-radius:4px;transition:width .5s"></div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+        ${pt.map(t=>{
+          const a=getUserById(t.assigneeId);
+          return`<span style="font-size:11px;padding:3px 8px;border-radius:10px;background:${t.status==='done'?'var(--green-light)':t.status==='inprog'?'var(--amber-light)':'var(--bg)'};color:${t.status==='done'?'var(--green)':t.status==='inprog'?'var(--amber)':'var(--text-muted)'}">
+            ${t.name}${a?' ['+getInitials(a.name)+']':''} ${t.progress}%
+          </span>`;
+        }).join('')}
+      </div>
+    </div>`;
+  });
+  document.getElementById('project-summary').innerHTML=projHtml;
+}
+
+// ===== TABS =====
+function switchTab(name,btn){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='gantt')renderGantt();
+  if(name==='overview')renderOverview();
+  if(name==='members'){renderMembersGrid();selectedMemberId=null;document.getElementById('member-detail-section').innerHTML='';}
+  if(name==='users')renderUsersTable();
+}
+
+// ===== MODAL HELPERS =====
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-overlay').forEach(el=>{
+  el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open')});
+});
+
+// ===== TOAST =====
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+function refreshAll(){renderTasks();renderOverview();if(selectedMemberId)renderMemberDetail(selectedMemberId);}
+
+// ===== INIT =====
+buildLoginWho();
+</script>
+</body>
+</html>
